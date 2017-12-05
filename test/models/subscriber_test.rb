@@ -10,17 +10,17 @@ class SubscriberTest < ActiveSupport::TestCase
   end
 
   test "first name should be present" do
-    @subscriber.first_name = "   "
+    @subscriber.first_name = " "
     assert_not @subscriber.valid?
   end
 
   test "last name should be present" do
-    @subscriber.last_name = "   "
+    @subscriber.last_name = " "
     assert_not @subscriber.valid?
   end
 
   test "phone number should be present" do
-    @subscriber.phone_number = "  "
+    @subscriber.phone_number = " "
     assert_not @subscriber.valid?
   end
 
@@ -34,13 +34,17 @@ class SubscriberTest < ActiveSupport::TestCase
     assert_not @subscriber.valid?
   end
 
+  test "full name should be first + last" do
+    assert_equal "#{@subscriber.first_name} #{@subscriber.last_name}", @subscriber.full_name
+  end
+
   test "phone number should not be too long" do
-    @subscriber.phone_number = "1" * 13
+    @subscriber.phone_number = " " + "+12098675309" + " "
     assert_not @subscriber.valid?
   end
 
   test "phone number validation should accept valid phone numbers" do
-    valid_numbers = %w[+12098675309 +00000000000 +11111111111 +22222222222 +12095555555]
+    valid_numbers = %w[+12098675309 +00000000000 +11111111111 +12095555555]
     valid_numbers.each do |valid_number|
       @subscriber.phone_number = valid_number
       assert @subscriber.valid?, "#{valid_number.inspect} should be valid"
@@ -48,7 +52,7 @@ class SubscriberTest < ActiveSupport::TestCase
   end
 
   test "phone number validation should reject invalid numbers" do
-    invalid_numbers = %w[user@example,com user_at_foo.org user.name@example. foo@bar_baz.com foo@bar+baz.com foo@bar..com]
+    invalid_numbers = %w[12098675309 2098675309 209-867-5309 8675309]
     invalid_numbers.each do |invalid_number|
       @subscriber.phone_number = invalid_number
       assert_not @subscriber.valid?, "#{invalid_number.inspect} should be invalid"
